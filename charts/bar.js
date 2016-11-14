@@ -1,4 +1,4 @@
-(function($) {
+(function() {
 
     // The Model
 
@@ -8,14 +8,15 @@
     // Adding a title to be displayed in the UI
     // and limiting the type of data to Numbers only
     var x = model.dimension()
-        .title('X Axis')
-        .types(Number);
+        .title('Label')
+        .types(String);
 
     // Y axis dimension
     // Same as X
     var y = model.dimension()
-        .title('Y Axis')
+        .title('Size')
         .types(Number);
+
 
     // Mapping function
     // For each record in the data returns the values
@@ -23,7 +24,7 @@
     model.map(function(data) {
         return data.map(function(d) {
             return {
-                x: +x(d),
+                name: x(d),
                 y: +y(d)
             };
         });
@@ -34,8 +35,8 @@
 
     var chart = raw.chart()
         .title('Simple bar chart')
-        .description('A simple bar chart')
-        .thumbnail('imgs/alluvial.png')
+        .description('A chart useful for comparisons between categorical data')
+        .thumbnail('imgs/bar.png')
         .category('Bar')
         .model(model);
 
@@ -44,10 +45,16 @@
     // Options can be use within the Draw function
     // by simply calling them (i.e. witdh())
     // the current value of the options will be returned
+    /*
+        var colors = chart.color()
+            .title('Color scale');*/
 
-    var colors = chart.color()
-        .title("Color scale");
+    var width = chart.number()
+        .title('TKTK')
+        .defaultValue(9000);
 
+    var check = chart.checkbox()
+        .title('TKTK');
     /*
         // Width
         var width = chart.number()
@@ -68,58 +75,66 @@
     // selection represents the d3 selection (svg)
     // data is not the original set of records
     // but the result of the model map function
+
     chart.draw(function(selection, data) {
 
-        colors.domain(['Tons of coal ash'],function (d){ return d; });
+        data.sort(function(a, b) {
+            return b.y - a.y;
+        });
 
-        Highcharts.setOptions({
-            colors: [colors()('Tons of coal ash')],
-            lang: {
-                thousandsSep: ','
-            }
-        });
-        $(selection[0][0]).highcharts({
-            chart: {
-                type: 'bar'
-            },
-            title: {
-                text: ' '
-            },
-            /*
-            xAxis: {
-                categories: ['Minefill', 'Concrete', 'Wallboard', 'Structural fill', 'Blended cement', 'Blasting grit', 'Miscellaneous', 'Agriculture', 'Soil stabilization', 'Snow removal']
-            },*/
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Tons of coal ash'
+        var draw = function () {
+            Highcharts.setOptions({
+                colors: ['red'],
+                lang: {
+                    thousandsSep: ','
+                }
+            });
+            Highcharts.chart('chart-1', {
+                chart: {
+                    type: 'bar'
                 },
-                labels: {
-                    format: '{value:,.0f}'
-                }
-            },
-            legend: {
-                reversed: true
-            },
-            tooltip: {
-                formatter: function() {
-                    return this.series.name + ': ' +
-                        '<b>' + Highcharts.numberFormat(this.y, 0, '.', ',') + '</b>';
-                }
-            },
-            plotOptions: {
-                series: {
-                    stacking: 'normal'
-                }
-            },
-            series: [{
-                name: 'Tons of coal ash',
-                data: data
-            }],
-            credits: {
-                enabled: false
-            },
-        });
+                title: {
+                    text: ' '
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: y()
+                    },
+                    labels: {
+                        format: '{value:,.0f}'
+                    }
+                },
+                legend: {
+                    enabled: false,
+                    reversed: true
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    }
+                },
+                series: [{
+                    data: data
+                }],
+                credits: {
+                    enabled: false
+                },
+            });
+        };
+
+        raw.embed = '<div id="chart-1"></div>\n' +
+            '<script src="//code.highcharts.com/highcharts.js"></script>\n' +
+            '<script>(' +
+            draw.toString()
+                .replace('data: data','data: ' + JSON.stringify(data,null,'                        '))
+                .replace('text: y()','text: \'' + y() + '\'') +
+            ')()</script>';
+
+        draw();
 
     });
-})(jQuery);
+})();

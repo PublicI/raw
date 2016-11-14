@@ -20,6 +20,7 @@ angular.module('raw.directives', [])
 
                 d3.select(element[0])
                     .append('div')
+                    .attr('id','chart-1')
                     .datum(scope.data)
                     .call(scope.chart);
 /*
@@ -462,11 +463,11 @@ angular.module('raw.directives', [])
 .directive('coder', function () {
   return {
     restrict: 'EA',
-    template :  '<textarea id="source" readonly class="source-area" rows="4" ng-model="svgCode"></textarea>',
+    template :  '<textarea id="source" readonly class="source-area" rows="4" ng-model="raw.embed"></textarea>',
     link: function postLink(scope, element, attrs) {
 
         scope.$on('completeGraph',function(){
-            element.find('textarea').val(scope.svgCode)
+            element.find('textarea').val(scope.raw.embed)
         })
 
       /*function asHTML(){
