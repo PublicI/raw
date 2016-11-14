@@ -83,18 +83,18 @@ h4 {
   height: auto !important;
   height: 100%;
   /* Negative indent footer by it's height */
-  margin: 0 auto -215px;
-  padding-bottom: 215px;
+  // margin: 0 auto -215px;
+  // padding-bottom: 215px;
 
 }
-
+/*
 #push,
 #footer {
   height: 215px;
-}
+}*/
 
 #footer {
-  background-color: #565656;
+  background-color: #222; //#565656;
   font-size: 14px;
   color: #bbb;
   font-weight: 400;
@@ -151,9 +151,9 @@ section.dark {
   opacity: .97;
   z-index: 10000;
   border-radius: 0px;
-  padding: 20px 0px;
-  margin-bottom: 30px;
-  background-color: #fff;
+  padding: 15px 0px;
+  // margin-bottom: 30px;
+  // background-color: #fff;
 }
 
 .navbar-brand {
