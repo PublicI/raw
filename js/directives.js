@@ -463,12 +463,16 @@ angular.module('raw.directives', [])
 .directive('coder', function () {
   return {
     restrict: 'EA',
-    template :  '<textarea id="source" readonly class="source-area" rows="4" ng-model="raw.embed"></textarea>',
+    template :  '<textarea id="source" readonly class="source-area" rows="7" ng-model="raw.embed"></textarea>',
     link: function postLink(scope, element, attrs) {
 
         scope.$on('completeGraph',function(){
             element.find('textarea').val(scope.raw.embed)
         })
+
+        element.find('textarea').on('focus',function () {
+            this.select();
+        });
 
       /*function asHTML(){
         if (!$('#chart > svg').length) return "";
