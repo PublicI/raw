@@ -118,6 +118,7 @@
                     }
                 },
                 series: [{
+                    name: y(),
                     data: data
                 }],
                 credits: {
@@ -128,11 +129,14 @@
 
         raw.embed = '<div id="chart-1"></div>\n' +
             '<script src="//code.highcharts.com/highcharts.js"></script>\n' +
-            '<script>(' +
+            '<script>\n' +
+            '(' +
             draw.toString()
                 .replace('data: data','data: ' + JSON.stringify(data,null,'                        '))
-                .replace('text: y()','text: \'' + y() + '\'') +
-            ')()</script>';
+                .replace('text: y()','text: \'' + y() + '\'')
+                .replace('name: y()','name: \'' + y() + '\'') +
+            ')()\n' + 
+            '</script>';
 
         draw();
 
