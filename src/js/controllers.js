@@ -261,9 +261,10 @@ angular.module('raw.controllers', [])
 
     $scope.importMode = 'clipboard';
 
-    $scope.categories = ['Hierarchies', 'Time Series', 'Distributions', 'Correlations', 'Others'];
+    $scope.categories = ['Bar','Hierarchies', 'Time Series', 'Distributions', 'Correlations', 'Others'];
 
     $scope.bgColors = {
+      'Bar': 'rgb(5, 205, 255)',
       'Hierarchies': '#0f0',
       'Time Series': 'rgb(255, 185, 5)',
       'Distributions': 'rgb(5, 205, 255)',
@@ -423,7 +424,7 @@ angular.module('raw.controllers', [])
     });
 
     $scope.charts = raw.charts.values().sort(function (a,b){ return d3.ascending(a.category(),b.category()) || d3.ascending(a.title(),b.title()) })
-    $scope.chart = $scope.charts.filter(function(d){return d.title() == 'Scatter Plot'})[0];
+    $scope.chart = $scope.charts.filter(function(d){return d.title() == 'Bar chart'})[0];
     $scope.model = $scope.chart ? $scope.chart.model() : null;
 
     $scope.$watch('error', function (error){

@@ -34,8 +34,8 @@
     // The Chart
 
     var chart = raw.chart()
-        .title('Simple bar chart')
-        .description('A chart useful for comparisons between categorical data')
+        .title('Bar chart')
+        .description('A bar chart or bar graph is a chart or graph that presents grouped data with rectangular bars with heights proportional to the values that they represent.')
         .thumbnail('imgs/bar.png')
         .category('Bar')
         .model(model);
@@ -89,7 +89,7 @@
                     thousandsSep: ','
                 }
             });
-            Highcharts.chart('chart-1', {
+            Highcharts.chart('chart', {
                 chart: {
                     type: 'bar'
                 },

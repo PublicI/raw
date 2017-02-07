@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" ng-app="raw">
 <head>
-  <title>RAW</title>
+  <title>Charts | Center for Public Integrity</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Keywords" content="RAW,visualization,data,design,spreadsheet,interface,vector graphics,SVG,PNG,JSON">
@@ -39,20 +39,23 @@
 
 <body data-spy="scroll" data-target="#raw-nav">
 
-  <header class="navbar navbar-static-top" role="navigation" id="raw-nav" role="banner">
+  <header class="navbar navbar-static-top navbar-inverse" role="navigation" id="raw-nav" role="banner">
     <div class="container">
      <div class="navbar-header">
+     <!--
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#raw-navbar">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
+      -->
         <a class="navbar-brand" href="/#">
-          <img alt="RawGraphs" src="imgs/rawgraphslogo.png">
+          <img src="https://cloudfront-files-1.publicintegrity.org/apps/2016/06/grant-search/1.0.5/img/logo.svg" style="min-width:250px; margin-top: -20px;">
         </a>
       </div>
 
+<!--
       <nav class="collapse navbar-collapse" role="navigation" id="raw-navbar">
         <ul class="nav navbar-nav navbar-right">
           <li><a href="http://rawgraphs.io/">About</a></li>
@@ -61,6 +64,7 @@
           <li><a href="https://github.com/densitydesign/raw" style="font-size:23px"><i class="fa fa-github"></i></a></li>
         </ul>
       </nav>
+-->
 
       <!--<span class="pull-left">The missing link between spreadsheets and vector graphics</span class="pull-left">-->
 
@@ -73,10 +77,11 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-6">
-          <p><strong>RAW</strong> is an open source project by <a href="http://www.densitydesign.org">DensityDesign Lab</a> and <a href="http://calib.ro">Calibro</a></p>
+          <p>Based on <strong>RAW</strong> &mdash; an open source project by <a href="http://www.densitydesign.org">DensityDesign Lab</a> and <a href="http://calib.ro">Calibro</a></p>
           <p><a href="https://www.giorgiocaviglia.com" target="_blank">Giorgio Caviglia,</a> <a href="http://www.densitydesign.org/person/michele-mauri/" target="_blank">Michele Mauri</a>, <a href="http://calib.ro" target="_blank">Giorgio Uboldi</a>, <a href="http://calib.ro" target="_blank">Matteo Azzi</a></p>
           <p>&copy; 2013-2017 (<a href="https://raw.github.com/densitydesign/raw/master/LICENSE">Apache License 2.0</a>)</p>
         </div>
+        <!--
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
           <p><a href="mailto:hello@rawgraphs.io"><i class="fa fa-envelope breath-right"></i>hello@rawgraphs.io</a></p>
           <p><a href="http://twitter.com/rawgraphs"><i class="fa fa-twitter breath-right"></i>rawgraphs</a></p>
@@ -85,6 +90,7 @@
           <p><a href="http://github.com/densitydesign/raw"><i class="fa fa-github breath-right"></i>GitHub</a></p>
           <p><a href="https://groups.google.com/forum/?hl=en#!forum/densitydesign-raw"><i class="fa fa-google breath-right"></i>Google group</a></p>
         </div>
+        -->
       </div>
     </div>
   </div>
@@ -111,31 +117,37 @@
   <script type="text/javascript" src="bower_components/FileSaver/FileSaver.js"></script>
   <!-- zeroclipboard -->
   <script type="text/javascript" src="bower_components/zeroclipboard/ZeroClipboard.min.js"></script>
+  <!-- highcharts -->
+  <script type="text/javascript" src="bower_components/highcharts/highcharts.js"></script>
+  <!-- <script type="text/javascript" src="bower_components/highcharts/modules/exporting.js"></script> -->
   <!-- raw -->
   <script type="text/javascript" src="lib/raw.js"></script>
 
   <!-- charts -->
+  <script src="charts/bar.js"></script>
   <script src="charts/treemap.js"></script>
   <script src="charts/streamgraph.js"></script>
   <script src="charts/scatterPlot.js"></script>
   <script src="charts/packing.js"></script>
-  <script src="charts/clusterDendrogram.js"></script>
+  <!-- <script src="charts/clusterDendrogram.js"></script>
   <script src="charts/voronoi.js"></script>
-  <script src="charts/delaunay.js"></script>
+  <script src="charts/delaunay.js"></script>-->
   <script src="charts/alluvial.js"></script>
   <script src="charts/clusterForce.js"></script>
-  <script src="charts/convexHullMultiple.js"></script>
+  <!-- <script src="charts/convexHullMultiple.js"></script>
   <script src="charts/hexagonalBinning.js"></script>
   <script src="charts/parallelCoordinates.js"></script>
   <script src="charts/circularDendrogram.js"></script>
+  -->
   <script src="charts/smallMultiplesArea.js"></script>
   <script src="charts/bumpChart.js"></script>
   <script src="charts/sunburst.js"></script>
   <script src="charts/gantt.js"></script>
   <script src="charts/horizon.js"></script>
-  <script src="charts/boxPlot.js"></script>
-  <script src="charts/barChart.js"></script>
+   <!-- <script src="charts/boxPlot.js"></script>
+  <script src="charts/barChart.js"></script> -->
   <script src="charts/pieChart.js"></script>
+
 
   <!-- angular -->
   <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
