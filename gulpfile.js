@@ -172,7 +172,7 @@ gulp.task('push', function(cb) {
 /*
     var rest = gulp.src(['dist/' + pkg.version + '/**'])
         .pipe(rename(function(path) {
-            path.dirname = '/apps/2016/11/' + pkg.name + '/' + pkg.version + '/' + path.dirname;
+            path.dirname = '/apps/2017/01/' + pkg.name + '/' + pkg.version + '/' + path.dirname;
         }))
         .pipe(awspublish.gzip())
         .pipe(publisher.publish())
@@ -181,7 +181,7 @@ gulp.task('push', function(cb) {
         .on('end', function() {*/
             gulp.src(['dist/**'])
                 .pipe(rename(function(path) {
-                    path.dirname = '/apps/2016/11/' + pkg.name + '/' + path.dirname;
+                    path.dirname = '/apps/2017/01/' + pkg.name + '/' + path.dirname;
                 }))
                 .pipe(publisher.publish({
                     'Cache-Control': 's-maxage=' + (60 * 2) + ',max-age=0'

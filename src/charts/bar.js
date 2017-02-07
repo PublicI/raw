@@ -9,13 +9,15 @@
     // and limiting the type of data to Numbers only
     var x = model.dimension()
         .title('Label')
-        .types(String);
+        .types(String)
+        .required(1);
 
     // Y axis dimension
     // Same as X
     var y = model.dimension()
         .title('Size')
-        .types(Number);
+        .types(Number)
+        .required(1);
 
 
     // Mapping function
