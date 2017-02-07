@@ -3,3 +3,5 @@ node_modules/
 bower_components/
 components/
 js/analytics.js
+dist/
+config.yml
