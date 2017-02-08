@@ -179,7 +179,14 @@ gulp.task('push', function(cb) {
         .pipe(publisher.cache())
         .pipe(awspublish.reporter())
         .on('end', function() {*/
-            gulp.src(['dist/**'])
+            gulp.src(['**',
+                      '!config.yml',
+                      '!config.yml.example',
+                      '!node_modules/**',
+                      '!gulpfile.js',
+                      '!yarn.lock',
+                      '!README.md',
+                      '!package.json'])
                 .pipe(rename(function(path) {
                     path.dirname = '/apps/2017/01/' + pkg.name + '/' + path.dirname;
                 }))
