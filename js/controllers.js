@@ -4,12 +4,12 @@
 
 angular.module('raw.controllers', [])
 
-  .controller('RawCtrl', function ($scope, dataService, $http, $timeout) {
+  .controller('RawCtrl', function ($scope, dataService, $http, $timeout, $sce) {
 
     $scope.loading = false;
 
     // Clipboard
-    $scope.$watch('clipboardText', function (text) {
+    $scope.$watch('clipboardText', text =>  {
       if (!text) return;
 
       $scope.loading = true;
@@ -31,10 +31,10 @@ angular.module('raw.controllers', [])
 
     });
 
-    $scope.antani = function(d){
+    $scope.antani = d => {
       $scope.loading = true;
       var json = dataService.flatJSON(d);
-      parseText(d3.tsv.format(json))
+      parseText(d3.tsvFormat(json))
     }
 
     // select Array in JSON
@@ -53,18 +53,16 @@ angular.module('raw.controllers', [])
     }
 
     // load File
-    $scope.uploadFile = function (files) {
+    $scope.uploadFile = file =>  {
 
-      if (files && files.length) {
+      if (file.size) {
 
         $scope.loading = true;
-
-        var file = files[0];
 
         // excel
         if (file.name.search(/\.xls|\.xlsx/) != -1 || file.type.search('sheet') != -1) {
           dataService.loadExcel(file)
-          .then(function(worksheets){
+          .then(worksheets => {
             $scope.fileName = file.name;
             $scope.loading = false;
             // multiple sheets
@@ -80,7 +78,7 @@ angular.module('raw.controllers', [])
         // json
         if (file.type.search('json') != -1) {
           dataService.loadJson(file)
-          .then(function(json){
+          .then(json => {
             $scope.fileName = file.name;
             selectArray(json);
           })
@@ -89,7 +87,7 @@ angular.module('raw.controllers', [])
         // txt
         if (file.type.search('text') != -1) {
           dataService.loadText(file)
-          .then(function(text){
+          .then(text => {
             $scope.fileName = file.name;
             parseText(text);
           })
@@ -115,7 +113,7 @@ angular.module('raw.controllers', [])
     }
 
     // load URl
-    $scope.$watch('url', function (url) {
+    $scope.$watch('url', url => {
 
       if(!url || !url.length) {
         return;
@@ -128,71 +126,65 @@ angular.module('raw.controllers', [])
 
       $scope.loading = true;
       var error = null;
-
       // first trying jsonp
-      $http.jsonp(url+'?callback=JSON_CALLBACK')
-      .success(function(data, status, headers, config) {
-        $scope.fileName = url;
-        parseData(data);
-      })
-      .error(function(data, status, headers, config) {
-        console.log(data,status,headers)
-
-        $http.get(url, {responseType:'arraybuffer'})
-        .success(function(arraybuffer, status, headers, config) {
-          console.log(arraybuffer,status,headers)
-
-          var data = new Uint8Array(arraybuffer);
-          var arr = new Array();
-          for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-          var bstr = arr.join("");
-
-          try {
-            var workbook = XLS.read(bstr, {type:"binary"});
-            var worksheets = [];
-						var sheet_name_list = workbook.SheetNames;
-
-						sheet_name_list.forEach(function(y) {
-						  var worksheet = workbook.Sheets[y];
-							worksheets.push({
-								name: y,
-								text : XLSX.utils.sheet_to_csv(worksheet),
-                rows: worksheet['!range'].e.r
-							})
-						});
-
+      $http.jsonp($sce.trustAsResourceUrl(url), {jsonpCallbackParam: 'callback'})
+          .then(response => {
             $scope.fileName = url;
-            $scope.loading = false;
+            parseData(response.data);
+      }, response => {
 
-            // multiple sheets
-            if (worksheets.length > 1) {
-              $scope.worksheets = worksheets;
-            // single > parse
-            } else {
-              parseText(worksheets[0].text);
-            }
-          }
-          catch(error) {
-            $scope.fileName = url;
+          $http.get($sce.trustAsResourceUrl(url), {responseType:'arraybuffer'})
+          .then(response => {
+
+            var data = new Uint8Array(response.data);
+            var arr = new Array();
+            for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+            var bstr = arr.join("");
+
             try {
-              var json = JSON.parse(bstr);
-              selectArray(json);
+              var workbook = XLS.read(bstr, {type:"binary"});
+              var worksheets = [];
+        			var sheet_name_list = workbook.SheetNames;
+
+        			sheet_name_list.forEach(function(y) {
+        			  var worksheet = workbook.Sheets[y];
+        				worksheets.push({
+        					name: y,
+        					text : XLSX.utils.sheet_to_csv(worksheet),
+                  rows: worksheet['!range'].e.r
+        				})
+        			});
+
+              $scope.fileName = url;
+              $scope.loading = false;
+
+              // multiple sheets
+              if (worksheets.length > 1) {
+                $scope.worksheets = worksheets;
+              // single > parse
+              } else {
+                parseText(worksheets[0].text);
+              }
             }
             catch(error) {
-              parseText(bstr);
+              $scope.fileName = url;
+              try {
+                var json = JSON.parse(bstr);
+                selectArray(json);
+              }
+              catch(error) {
+                parseText(bstr);
+              }
             }
-          }
 
-        })
-        .error(function(data, status, headers, config) {
-          $scope.loading = false;
-          $scope.error = "Something wrong with the URL you provided. Please be sure it is the correct address.";
-        });
+          },
+          response => {
+            $scope.loading = false;
+            $scope.error = "Something wrong with the URL you provided. Please be sure it is the correct address.";
+          }
+        )
 
       });
-
-
-
 
     });
 
@@ -210,46 +202,33 @@ angular.module('raw.controllers', [])
       { title : 'Most frequent letters', type: 'Matrix (narrow)', url:'data/letters.tsv'}
     ]
 
-    $scope.selectSample = function(sample) {
-
+    $scope.selectSample = sample => {
 //    $scope.$watch('sample', function (sample){
       if (!sample) return;
+      $scope.text = "";
       $scope.loading = true;
       dataService.loadSample(sample.url).then(
-        function(data){
-          $scope.text = data;
+        data => {
+          $scope.text = data.replace(/\r/g, '');
           $scope.loading = false;
         },
-        function(error){
+        error => {
           $scope.error = error;
           $scope.loading = false;
         }
       );
     }//);
 
-    $(document).on('dragenter', function(e){
+    $(document.getElementById("load-data")).on('dragenter', function(e){
       $scope.importMode = 'file';
       $scope.parsed = false;
       $scope.$digest();
-    })
-
-    $scope.$watch('importMode', function (n,o){
-
-      $scope.parsed = false;
-      $scope.loading = false;
-      $scope.clipboardText = "";
-      $scope.unstacked = false;
-      $scope.text = "";
-      $scope.data = [];
-      $scope.json = null;
-      $scope.worksheets = [];
-      $scope.fileName = null;
     });
 
     $scope.$watch('dataView', function (n,o){
       if (!$('.parsed .CodeMirror')[0]) return;
       var cm = $('.parsed .CodeMirror')[0].CodeMirror;
-      $timeout(function() { cm.refresh()});
+      $timeout(function() { cm.refresh() });
     });
 
     // init
@@ -283,7 +262,15 @@ angular.module('raw.controllers', [])
 
     $scope.$watch('importMode', function(){
       // reset
+      $scope.parsed = false;
+      $scope.loading = false;
       $scope.clipboardText = "";
+      $scope.unstacked = false;
+      $scope.text = "";
+      $scope.data = [];
+      $scope.json = null;
+      $scope.worksheets = [];
+      $scope.fileName = null;
       $scope.url = "";
       //$scope.$apply();
     })
@@ -299,7 +286,7 @@ angular.module('raw.controllers', [])
 
       var unstacked = [];
 
-      data.forEach(function(row){
+      data.forEach(row => {
         for (var column in row) {
             if (column == base) continue;
             var obj = {};
@@ -310,14 +297,14 @@ angular.module('raw.controllers', [])
           }
       })
       $scope.oldData = data;
-      parseText(d3.tsv.format(unstacked));
+      parseText(d3.tsvFormat(unstacked));
 
       $scope.unstacked = true;
 
     }
 
     $scope.stack = function(){
-      parseText(d3.tsv.format($scope.oldData));
+      parseText(d3.tsvFormat($scope.oldData));
       $scope.unstacked = false;
     }
 
@@ -353,7 +340,7 @@ angular.module('raw.controllers', [])
       var n = array.length;
       var rows = {};
 
-      array.forEach(function(o){
+      array.forEach(o => {
         for (var p in o) {
           if (!rows.hasOwnProperty(p)) rows[p] = {};
           if (!rows[p].hasOwnProperty(o[p])) rows[p][o[p]] = -1;
@@ -372,7 +359,7 @@ angular.module('raw.controllers', [])
         }
       }
 
-      var m = d3.values(rows).map(d3.values).map(function(d){ return d3.sum(d)/n; });
+      var m = d3.values(rows).map(d3.values).map(d => { return d3.sum(d)/n; });
       //console.log(d3.mean(m),m)
       $scope.pivot = d3.mean(m);
 
@@ -381,7 +368,7 @@ angular.module('raw.controllers', [])
 
 
 
-    $scope.parse = function(text){
+    $scope.parse = text => {
 
       if ($scope.model) $scope.model.clear();
 
@@ -402,7 +389,11 @@ angular.module('raw.controllers', [])
         pivotable($scope.data);
         $scope.parsed = true;
 
-
+        $timeout(function() {
+          $scope.charts = raw.charts.values().sort(function (a,b){ return d3.ascending(a.category(),b.category()) || d3.ascending(a.title(),b.title()) })
+          $scope.chart = $scope.charts.filter(d => {return d.title() == 'Scatter Plot'})[0];
+          $scope.model = $scope.chart ? $scope.chart.model() : null;
+        });
       } catch(e){
         $scope.data = [];
         $scope.metadata = [];
@@ -411,22 +402,18 @@ angular.module('raw.controllers', [])
       if (!$scope.data.length && $scope.model) $scope.model.clear();
       $scope.loading = false;
       var cm = $('.parsed .CodeMirror')[0].CodeMirror;
-      $timeout(function() { cm.refresh()} );
+      $timeout(function() { cm.refresh(); cm.refresh(); } );
     }
 
     $scope.delayParse = dataService.debounce($scope.parse, 500, false);
 
-    $scope.$watch("text", function (text){
+    $scope.$watch("text", text => {
       if (!text) return;
       $scope.loading = true;
       $scope.delayParse(text);
     });
 
-    $scope.charts = raw.charts.values().sort(function (a,b){ return d3.ascending(a.category(),b.category()) || d3.ascending(a.title(),b.title()) })
-    $scope.chart = $scope.charts.filter(function(d){return d.title() == 'Scatter Plot'})[0];
-    $scope.model = $scope.chart ? $scope.chart.model() : null;
-
-    $scope.$watch('error', function (error){
+    $scope.$watch('error', error => {
       if (!$('.parsed .CodeMirror')[0]) return;
       var cm = $('.parsed .CodeMirror')[0].CodeMirror;
       if (!error) {
@@ -440,7 +427,7 @@ angular.module('raw.controllers', [])
 
     $('body').mousedown(function (e,ui){
       if ($(e.target).hasClass("dimension-info-toggle")) return;
-      $('.dimensions-wrapper').each(function (e){
+      $('.dimensions-wrapper').each(e => {
         angular.element(this).scope().open = false;
         angular.element(this).scope().$apply();
       })
@@ -452,7 +439,7 @@ angular.module('raw.controllers', [])
       lineWrapping : true
     }
 
-    $scope.selectChart = function(chart){
+    $scope.selectChart = chart => {
       if (chart == $scope.chart) return;
       $scope.model.clear();
       $scope.chart = chart;
@@ -503,7 +490,7 @@ angular.module('raw.controllers', [])
 
     })
 
-      $scope.sortCategory = function (chart) {
+      $scope.sortCategory = chart => {
         // sort first by category, then by title
         return [chart.category(),chart.title()];
       };
